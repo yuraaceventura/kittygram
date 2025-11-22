@@ -114,9 +114,11 @@ jobs:
           pip install pytest
           pip install --no-cache-dir -r ./backend/requirements.txt
           pip install psycopg2-binary
-      - name: Run tests against deployed services
+          
+      - name: Run tests
         run: |
-          python -m pytest 
+          cd backend
+          python -m pytest ../tests
 
 
   telegram_msg:
