@@ -72,15 +72,16 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       # Копируем docker-compose.production.yml на продакшен-сервер:
-      - name: Copy docker-compose.yml via ssh
-        uses: appleboy/scp-action@master
-      # Передаём параметры для action appleboy/scp-action:
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          source: "docker-compose.production.yaml"
-          target: /app
+      - name: Install sshpass and copy files
+        run: |
+          sudo apt-get update && sudo apt-get install -y sshpass
+          sshpass -p '${{ secrets.SSH_PASSWORD }}' scp \
+          -o StrictHostKeyChecking=no \
+          -o UserKnownHostsFile=/dev/null \
+          docker-compose.production.yaml \
+          ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/deploy/app/
+
+
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
@@ -88,7 +89,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd /app
+            cd /home/deploy/app
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} > .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
             echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
