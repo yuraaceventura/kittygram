@@ -79,7 +79,6 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSWORD }}
           source: "docker-compose.production.yaml"
           target: /app
       - name: Executing remote ssh commands to deploy
@@ -88,7 +87,6 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSWORD }}
           script: |
             cd /app
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} > .env
