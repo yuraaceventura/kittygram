@@ -98,16 +98,23 @@ jobs:
   autotests:
       runs-on: ubuntu-latest
       needs: deploy
+
       steps:
-        - name: Run autotests
-          run: |
-            sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh \
-            -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            deploy@${{ secrets.SSH_HOST }} "
-            cd /home/deploy/app
-            pip install pytest
-            pytest "
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install pytest
+      
+      - name: Run tests against deployed services
+        run: |
+          python -m pytest 
 
 
   telegram_msg:
